@@ -1,6 +1,7 @@
 import React from 'react';
 import { Inter } from 'next/font/google';
 import StyledComponentsRegistry from '../lib/AntdRegistry';
+import { NextAuthProvider } from '@/lib/nextAuthProvider';
 // import '@/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -13,7 +14,11 @@ export const metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <html lang="en">
     <body className={inter.className}>
-      <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+      <NextAuthProvider>
+        <StyledComponentsRegistry>
+          {children}
+        </StyledComponentsRegistry>
+      </NextAuthProvider>
     </body>
   </html>
 );
