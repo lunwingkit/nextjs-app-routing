@@ -5,7 +5,7 @@ import { useServerInsertedHTML } from 'next/navigation';
 import type Entity from '@ant-design/cssinjs/es/Cache';
 
 const StyledComponentsRegistry = ({ children }: { children: React.ReactNode }) => {
-  const cache = React.useMemo<Entity>(() => createCache(), [createCache]);
+  const cache = React.useMemo<Entity>(() => createCache(), []);
   useServerInsertedHTML(() => (
     <style id="antd" dangerouslySetInnerHTML={{ __html: extractStyle(cache, true) }} />
   ));
