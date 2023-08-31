@@ -7,18 +7,18 @@ import Schema$Event = calendar_v3.Schema$Event;
 import Schema$Events = calendar_v3.Schema$Events;
 import Schema$Message = gmail_v1.Schema$Message;
 import Params$Resource$Events$List = calendar_v3.Params$Resource$Events$List;
-// import { PrismaClient } from '@prisma/client'
-// import { parseEmail } from './emailParser';
+import { PrismaClient } from '@prisma/client'
+import { parseEmail } from './emailParser';
 import { timeZoneHongKong } from '@/types/constants';
 
-// const prisma = new PrismaClient()
+const prisma = new PrismaClient()
 const outputDateTimeFormat = "DD MMM yy HH:mm:ss";
 
 export async function fetchAllPaymeRecords(from: number = 1672502400, to: number = 1704038400): Promise<PaymentRecord[]> {
     const allMails = await fetchAllEmails(from, to);
     const paymentRecords: PaymentRecord[] = [];
     for (const mail of allMails) {
-        // paymentRecords.push(parseEmail(mail.snippet as string));
+        paymentRecords.push(parseEmail(mail.snippet as string));
     }
     return paymentRecords;
 }
@@ -112,7 +112,7 @@ function getCalendar(): Calendar {
     return calendar;
 }
 
-export async function addEvents(){
+export async function addGoogleCalendarEvents(){
 
 }
 
@@ -167,7 +167,7 @@ async function getEventDetail(calendarId: string, event: Schema$Event): Promise<
 
 
 export async function syncEvents(calendarId: string): Promise<string> {
-    // const syncToken = await getSyncToken(calendarId);
+    const syncToken = await getSyncToken(calendarId);
 
 
     // const params: Params$Resource$Events$List = {
@@ -175,50 +175,50 @@ export async function syncEvents(calendarId: string): Promise<string> {
     //     syncToken: syncToken,
     // }
 
-    // const events: Schema$Events = await fetchAllEvents(calendarId, syncToken);
-    // if (events.nextSyncToken != null && events.nextSyncToken?.trim().length !== 0) {
-    //     await insertSyncToken(events.nextSyncToken, calendarId);
-    // }
+    const events: Schema$Events = await fetchAllEvents(calendarId, syncToken);
+    if (events.nextSyncToken != null && events.nextSyncToken?.trim().length !== 0) {
+        await insertSyncToken(events.nextSyncToken, calendarId);
+    }
 
     let res = "";
-    // console.log(events);
-    // // const event: Schema$Event = (await calendar.events.get({ calendarId, eventId })).data;
-    // if (events.items == undefined || events.items?.length === 0) {
-    //     res = "No update. Unknown error occured.";
-    // }
-    // else {
-    //     for (const item of events.items) {
-    //         res += await getEventDetail(calendarId, item);
-    //     }
-    // }
+    console.log(events);
+    // const event: Schema$Event = (await calendar.events.get({ calendarId, eventId })).data;
+    if (events.items == undefined || events.items?.length === 0) {
+        res = "No update. Unknown error occured.";
+    }
+    else {
+        for (const item of events.items) {
+            res += await getEventDetail(calendarId, item);
+        }
+    }
     return res;
 }
 
 
-// async function getSyncToken(calendarId: string): Promise<string> {
-//     const syncToken = await prisma.syncToken.findFirst({
-//         where: {
-//             calendarId: {
-//                 equals: calendarId,
-//             },
-//         },
-//         orderBy: {
-//             createTime: 'desc',
-//         },
-//     });
-//     return syncToken?.syncToken || "";
-// }
+async function getSyncToken(calendarId: string): Promise<string> {
+    const syncToken = await prisma.syncToken.findFirst({
+        where: {
+            calendarId: {
+                equals: calendarId,
+            },
+        },
+        orderBy: {
+            createTime: 'desc',
+        },
+    });
+    return syncToken?.syncToken || "";
+}
 
-// async function insertSyncToken(syncToken: string, calendarId: string) {
-//     try {
-//         await prisma.syncToken.create({
-//             data: {
-//                 syncToken: syncToken,
-//                 createTime: new Date(),
-//                 calendarId: calendarId,
-//             }
-//         })
-//     } catch (e) {
-//         console.log(e);
-//     }
-// }
+async function insertSyncToken(syncToken: string, calendarId: string) {
+    try {
+        await prisma.syncToken.create({
+            data: {
+                syncToken: syncToken,
+                createTime: new Date(),
+                calendarId: calendarId,
+            }
+        })
+    } catch (e) {
+        console.log(e);
+    }
+}
