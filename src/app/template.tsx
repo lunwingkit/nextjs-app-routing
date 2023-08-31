@@ -5,6 +5,8 @@ import { Content, Footer, Header } from "antd/es/layout/layout";
 import { useState } from "react";
 import RcResizeObserver from 'rc-resize-observer';
 import Link from "next/link";
+import { HeaderMenu } from "@/components/menu";
+import { MobileHeaderMenu } from "@/components/mobileHeader";
 
 export default function Template({ children }: { children: React.ReactNode }) {
     const [responsive, setResponsive] = useState(false);
@@ -19,7 +21,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
             >
                 <Layout>
                     <Header>
-                        <Menu>
+                        {/* <Menu>
                             <Menu.Item
                             key="item1">
                                 <Link href="\">Home</Link>
@@ -32,7 +34,8 @@ export default function Template({ children }: { children: React.ReactNode }) {
                             key="item3">
                                 <Link href="\contact">Contact</Link>
                             </Menu.Item>
-                        </Menu>
+                        </Menu> */}
+                        {responsive ? <MobileHeaderMenu /> : <HeaderMenu />}
                     </Header>
                     <Content >
                         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
