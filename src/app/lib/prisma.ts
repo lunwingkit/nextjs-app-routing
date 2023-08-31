@@ -1,5 +1,5 @@
+import { Killian, PAYME } from '@/types/constants';
 import { Prisma, Payment, PrismaClient, Reservation, Account } from '@prisma/client'
-import { Kam, Killian, Ocean, OrderStatus, OrderTaker, Owen, PaymentFor, PaymentMethod, SYSTEM, PAYME, RESERVATION } from '@/utils/variables';
 
 const prisma = new PrismaClient()
 

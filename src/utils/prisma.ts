@@ -1,7 +1,6 @@
 // import { cache } from 'react'
 
 import { Event, EventAttendee, PrismaClient, Account } from '@prisma/client'
-import { Kam, Killian, Ocean, OrderStatus, OrderTaker, Owen, PaymentFor, PaymentMethod } from './variables'
 
 const prisma = new PrismaClient()
 
