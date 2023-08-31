@@ -21,20 +21,6 @@ export default function Template({ children }: { children: React.ReactNode }) {
             >
                 <Layout>
                     <Header>
-                        {/* <Menu>
-                            <Menu.Item
-                            key="item1">
-                                <Link href="\">Home</Link>
-                            </Menu.Item>
-                            <Menu.Item
-                            key="item2">
-                                <Link href="\about">About</Link>
-                            </Menu.Item>
-                            <Menu.Item
-                            key="item3">
-                                <Link href="\contact">Contact</Link>
-                            </Menu.Item>
-                        </Menu> */}
                         {responsive ? <MobileHeaderMenu /> : <HeaderMenu />}
                     </Header>
                     <Content >

@@ -1,0 +1,114 @@
+generator client {
+  provider        = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Widget {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model SyncToken {
+  syncToken  String
+  createTime DateTime
+  calendarId String   @default("")
+
+  @@unique([syncToken, calendarId])
+}
+
+model GoogleOAuth2RefreshToken {
+  refreshToken String
+  createTime   DateTime
+
+  @@unique([refreshToken, createTime])
+}
+
+model Event {
+  id             Int             @id @default(sequence())
+  name           String          @db.String()
+  startTime      DateTime
+  endTime        DateTime
+  eventAttendees EventAttendee[]
+}
+
+model EventAttendee {
+  id        Int       @id @default(sequence())
+  accountId Int
+  eventId   Int
+  payments  Payment[]
+  user      Account   @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Reservation {
+  id           Int       @id @default(sequence())
+  startTime    DateTime
+  endTime      DateTime
+  orderStatus  String    @db.String()
+  accountId    Int
+  referrer     String?   @db.String()
+  orderTaker   String    @db.String()
+  afterCleaner String?   @db.String()
+  payments     Payment[]
+  deposit      Deposit?
+  user         Account   @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+}
+
+model Payment {
+  id                           Int            @id @default(sequence())
+  method                       String         @db.String()
+  recordAmount                 Decimal
+  recordPayerId                String         @db.String()
+  recordTime                   DateTime
+  recordRemark                 String         @db.String()
+  accountId                    Int
+  paymentFor                   String         @db.String()
+  reservationId                Int?
+  eventAttendeeId              Int?
+  receiverName                 String         @db.String()
+  receivedConfirmedByRecipient Boolean        @default(false)
+  receivedConfirmedBySystem    Boolean        @default(false)
+  user                         Account        @relation(fields: [accountId], references: [accountId])
+  reservation                  Reservation?   @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  eventAttendee                EventAttendee? @relation(fields: [eventAttendeeId], references: [id], onDelete: Cascade)
+}
+
+model Deposit {
+  id            Int         @id @default(sequence())
+  reservationId Int         @unique
+  amount        Decimal     @default(500)
+  isReturned    Boolean     @default(false)
+  recipientName String?
+  returnerName  String?
+  recordTime    DateTime?
+  recordRemark  String?
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  accountId  Int      @id @unique @default(sequence())
+  name       String?
+  email      String?
+  image      String?
+  sub        String   @unique
+  id         String?
+  provider   String
+  createTime DateTime
+
+  eventAttendees EventAttendee[]
+  reservations   Reservation[]
+  payments       Payment[]
+  contacts       Contact[]
+}
+
+model Contact {
+  accountId Int
+  channel   String
+  contactId String
+  user      Account @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@unique([accountId, channel, contactId])
+}
