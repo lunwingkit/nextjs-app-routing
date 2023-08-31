@@ -77,7 +77,7 @@ export function MobileHeaderMenu() {
                             // onClick={() => navigateTo('/')}
                         // style={centerStyle}
                         >
-                            <Link href="/" >
+                            <Link href="/about" >
                             About Us
                             </Link>
                         </Menu.Item>
