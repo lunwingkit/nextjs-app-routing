@@ -17,7 +17,7 @@ model SyncToken {
   calendarId String   @default("")
 
   @@unique([syncToken, calendarId])
-}
+}   
 
 model GoogleOAuth2RefreshToken {
   refreshToken String

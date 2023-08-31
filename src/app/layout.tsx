@@ -1,7 +1,7 @@
 import React from 'react';
 import { Inter } from 'next/font/google';
-import StyledComponentsRegistry from '../lib/AntdRegistry';
-import { NextAuthProvider } from '@/lib/nextAuthProvider';
+import StyledComponentsRegistry from './lib/AntdRegistry';
+import { NextAuthProvider } from '@/app/lib/nextAuthProvider';
 // import '@/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
