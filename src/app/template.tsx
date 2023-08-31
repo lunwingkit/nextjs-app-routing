@@ -1,12 +1,15 @@
 'use client';
-import { Layout, Menu, Space } from "antd";
-import ErrorBoundary from "antd/es/alert/ErrorBoundary";
-import { Content, Footer, Header } from "antd/es/layout/layout";
-import { useState } from "react";
-import RcResizeObserver from 'rc-resize-observer';
 import Link from "next/link";
-import { HeaderMenu } from "@/components/menu";
-import { MobileHeaderMenu } from "@/components/mobileHeader";
+import { Button, Layout, Menu, Space, Drawer } from 'antd';
+import { TeamOutlined, ScheduleOutlined, PhoneOutlined, CalendarOutlined, CommentOutlined, MenuOutlined, TwitterOutlined } from '@ant-design/icons';
+import { Content, Footer, Header } from 'antd/es/layout/layout';
+import { CustomFooter } from '@/components/footer';
+import { MobileHeaderMenu } from '@/components/mobileHeader';
+import { useState, } from 'react';
+import RcResizeObserver from 'rc-resize-observer';
+import { ErrorBoundary } from '@ant-design/pro-components';
+import { HeaderMenu } from '@/components/menu';
+import { TwitterLink } from "@/components/twitterLink";
 
 export default function Template({ children }: { children: React.ReactNode }) {
     const [responsive, setResponsive] = useState(false);
@@ -20,21 +23,11 @@ export default function Template({ children }: { children: React.ReactNode }) {
                 }}
             >
                 <Layout>
-                    <Header>
-                        {/* <Menu>
-                            <Menu.Item
-                            key="item1">
-                                <Link href="\">Home</Link>
-                            </Menu.Item>
-                            <Menu.Item
-                            key="item2">
-                                <Link href="\about">About</Link>
-                            </Menu.Item>
-                            <Menu.Item
-                            key="item3">
-                                <Link href="\contact">Contact</Link>
-                            </Menu.Item>
-                        </Menu> */}
+                    <Header
+                    // style={{
+                    //     position: 'sticky',
+                    // }}
+                    >
                         {responsive ? <MobileHeaderMenu /> : <HeaderMenu />}
                     </Header>
                     <Content >
@@ -42,7 +35,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
                             {children}
                         </Space>
                     </Content>
-                    <Footer />
+                    <CustomFooter />
                 </Layout>
             </RcResizeObserver>
         </ErrorBoundary >

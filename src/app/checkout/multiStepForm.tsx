@@ -165,6 +165,36 @@ const MultiStepForm: React.FC<Props> = ({ mapYYYYMMDD2DisbledHours }) => {
             content: '尚未能確認付款',
         });
     }
+
+    async function updateDB() {
+        const result = await fetch(`/api/createNewReservation`, {
+            method: "POST",
+            body: JSON.stringify({
+                'reservation': {
+                    startTime: '',
+                    endTime: '',
+                    orderStatus: '',
+                    referrer: '',
+                },
+                'payment': {
+                    method: "PAYME",
+                    recordAmount: '',
+                    recordPayerId: '',
+                    recordTime: new Date(),
+                    accountId: 1,
+                    paymentFor: '',
+                    
+                },
+                'user': {
+
+                },
+            }),
+            headers: {
+                "content-type": "application/json",
+            },
+        })
+    }
+
     const updatePaymentResult = (result: PaymentVerification) => {
         setPaymentResult(result.success);
         console.log(result.success);
@@ -300,6 +330,9 @@ const MultiStepForm: React.FC<Props> = ({ mapYYYYMMDD2DisbledHours }) => {
             .then(async response => {
                 const jsonData: PaymentVerification = await toJSON(response.body);
                 console.log(jsonData);
+                if (jsonData.success = 'success') {
+                    await updateDB();
+                }
                 updatePaymentResult(jsonData);
 
                 async function toJSON(body: any) {
@@ -396,23 +429,29 @@ const MultiStepForm: React.FC<Props> = ({ mapYYYYMMDD2DisbledHours }) => {
         }
     };
 
+    function getDurationHour() {
+        const start: Date = dayjs(formRef.current?.getFieldValue(bookingDateTime)[0].startOf('minute')).toDate();
+        const end: Date = dayjs(formRef.current?.getFieldValue(bookingDateTime)[1].startOf('minute')).toDate();
+        const durationHour: number = Math.abs(end.getTime() - start.getTime()) / 3600000;
+        return durationHour;
+    }
+
     function updateDescription(key: string): string {
-        if (formRef.current?.getFieldValue(domFee) != undefined &&
-            formRef.current?.getFieldValue(bookingDateTime) != undefined &&
+        if (formRef.current?.getFieldValue(bookingDateTime) != undefined &&
             formRef.current?.getFieldValue(bookingDateTime).length == 2) {
-            if (key == domFee) {
+            if (key == domFee && formRef.current?.getFieldValue(domFee) != undefined) {
 
                 // const domFeePerHour = formRef.current?.getFieldValue(domFee);
                 // const hour = Math.ceil(dayjs(formRef.current?.getFieldValue(bookingDateTime)[1]).diff(formRef.current?.getFieldValue(bookingDateTime)[0], 'minute', true) / 10) * 10 / 60;
                 // return `主人收費${domFeePerHour}/小時 * ${hour}小時`;
             }
             else if (key == hourlyRate) {
-                let res = "";
                 const headCountVal = formRef.current?.getFieldValue(headCount);
-                const hour = Math.ceil(dayjs(formRef.current?.getFieldValue(bookingDateTime)[1]).diff(formRef.current?.getFieldValue(bookingDateTime)[0], 'minute', true) / 10) * 10 / 60;
+                const hour = getDurationHour();
+                let res = ` ${hour}小時${headCountVal}人`;
                 if (headCountVal == 1 || headCountVal == 2) {
                     if (hour != 2) {
-                        res = "(優惠價)";
+                        res += " (優惠價)";
                     }
                 }
                 return res;
@@ -426,12 +465,7 @@ const MultiStepForm: React.FC<Props> = ({ mapYYYYMMDD2DisbledHours }) => {
             if (formRef.current?.getFieldValue(domFee) != undefined &&
                 formRef.current?.getFieldValue(bookingDateTime) != undefined && formRef.current?.getFieldValue(bookingDateTime).length == 2 &&
                 formRef.current?.getFieldValue(extraService).includes(domService)) {
-                const start: Date = dayjs(formRef.current?.getFieldValue(bookingDateTime)[0].startOf('minute')).toDate();
-                const end: Date = dayjs(formRef.current?.getFieldValue(bookingDateTime)[1].startOf('minute')).toDate();
-                const durationHour: number = Math.abs(end.getTime() - start.getTime()) / 3600000;
-                return Math.ceil(formRef.current?.getFieldValue(domFee) *
-                    durationHour
-                    // Math.ceil(dayjs(formRef.current?.getFieldValue(bookingDateTime)[1]).diff(formRef.current?.getFieldValue(bookingDateTime)[0], 'minute', true) / 10) * 10 / 60
+                return Math.ceil(formRef.current?.getFieldValue(domFee) * getDurationHour()
                 );
             }
             return 0;
